@@ -6,6 +6,8 @@ use App\Filament\Admin\Resources\VerifikasiMahasiswaResource\Pages;
 use App\Filament\Admin\Resources\VerifikasiMahasiswaResource\RelationManagers;
 use App\Models\UjianSkripsi;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -59,15 +61,31 @@ class VerifikasiMahasiswaResource extends Resource
             ->actions([
                 Action::make('verifikasi')
                     ->label('Ubah Status')
-                    ->form([
-                        Select::make('status')
-                            ->label('Status Verifikasi')
-                            ->options([
-                                'Terverifikasi' => 'Terverifikasi',
-                                'Ditolak' => 'Ditolak',
-                            ])
-                            ->required(),
-                    ])
+                    ->form(function (UjianSkripsi $record) {
+                        $berkasForms = $record->berkas->map(function ($berkas) {
+                            return FileUpload::make("berkas_{$berkas->id}")
+                                ->label($berkas->nama_berkas)
+                                ->default($berkas->file_path)
+                                ->disabled()
+                                ->downloadable()
+                                ->directory('berkas-ujian');
+                        })->toArray();
+                    
+                        return array_merge(
+                            [
+                                Section::make('Berkas Ujian')
+                                    ->schema($berkasForms)
+                                    ->columns(1),
+                                Select::make('status')
+                                    ->label('Status Verifikasi')
+                                    ->options([
+                                        'Terverifikasi' => 'Terverifikasi',
+                                        'Ditolak' => 'Ditolak',
+                                    ])
+                                    ->required()
+                            ]
+                        );
+                    })
                     ->action(function (array $data, UjianSkripsi $record) {
                         $record->update([
                             'status' => $data['status'],

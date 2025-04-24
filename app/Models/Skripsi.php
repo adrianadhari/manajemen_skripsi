@@ -27,4 +27,8 @@ class Skripsi extends Model
     {
         return $this->hasMany(UjianSkripsi::class);
     }
+    public function bimbingans()
+    {
+        return $this->hasMany(Bimbingan::class, 'skripsi_id');
+    }
 }

@@ -33,6 +33,11 @@ class User extends Authenticatable
         return $this->hasOne(Skripsi::class, 'mahasiswa_id');
     }
 
+    public function semuaSkripsi()
+    {
+        return $this->hasMany(Skripsi::class, 'mahasiswa_id');
+    }
+
     protected static function booted()
     {
         static::creating(function ($user) {
@@ -40,5 +45,10 @@ class User extends Authenticatable
                 $user->password = bcrypt('12345678');
             }
         });
+    }
+
+    public function sudahPunyaSkripsiDisetujui(): bool
+    {
+        return $this->semuaSkripsi && $this->semuaSkripsi->contains(fn($skripsi) => $skripsi->status === 'Disetujui');
     }
 }

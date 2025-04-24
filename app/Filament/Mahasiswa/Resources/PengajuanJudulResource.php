@@ -108,7 +108,9 @@ class PengajuanJudulResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                ->modalHeading('Detail Pengajuan Judul')
+                ->modalCancelAction(false),
             ])
             ->bulkActions([]);
     }

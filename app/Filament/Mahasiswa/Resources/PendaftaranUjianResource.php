@@ -42,23 +42,37 @@ class PendaftaranUjianResource extends Resource
                         $user = auth()->user();
                         return $user->skripsi()->where('status', 'Disetujui')->value('id');
                     }),
-                Select::make('jenis_ujian')
+                    Select::make('jenis_ujian')
                     ->label('Jenis Ujian')
                     ->options(function () {
                         $user = auth()->user();
                         $skripsiId = $user->skripsi()->where('status', 'Disetujui')->value('id');
-
-                        $jenisUjianYangSudahDiambil = \App\Models\UjianSkripsi::where('skripsi_id', $skripsiId)->pluck('jenis_ujian')->toArray();
-
-                        $semuaOpsi = [
-                            'Seminar Proposal' => 'Seminar Proposal',
-                            'Seminar Hasil' => 'Seminar Hasil',
-                            'Sidang Skripsi' => 'Sidang Skripsi',
-                        ];
-
-                        return collect($semuaOpsi)
-                            ->reject(fn($label, $value) => in_array($value, $jenisUjianYangSudahDiambil))
+                
+                        if (!$skripsiId) {
+                            return []; // Tidak punya skripsi disetujui
+                        }
+                
+                        // Ambil semua jenis ujian yang sudah diverifikasi
+                        $ujianTerverifikasi = \App\Models\UjianSkripsi::where('skripsi_id', $skripsiId)
+                            ->where('status', 'Terverifikasi')
+                            ->pluck('jenis_ujian')
                             ->toArray();
+                
+                        // Tentukan urutan ujian
+                        $urutan = [
+                            'Seminar Proposal',
+                            'Seminar Hasil',
+                            'Sidang Skripsi',
+                        ];
+                
+                        // Cari tahap yang belum diverifikasi
+                        foreach ($urutan as $jenis) {
+                            if (!in_array($jenis, $ujianTerverifikasi)) {
+                                return [$jenis => $jenis];
+                            }
+                        }
+                
+                        return []; // Semua ujian sudah diverifikasi
                     })
                     ->required()
                     ->reactive()

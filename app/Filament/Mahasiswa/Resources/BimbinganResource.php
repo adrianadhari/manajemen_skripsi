@@ -79,7 +79,10 @@ class BimbinganResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->modalHeading('Edit Log Bimbingan')
+                ->modalSubmitActionLabel('Edit')
+                ->modalCancelAction(false),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

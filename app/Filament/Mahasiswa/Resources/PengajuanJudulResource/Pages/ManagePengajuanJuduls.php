@@ -24,6 +24,10 @@ class ManagePengajuanJuduls extends ManageRecords
         return [
             Actions\CreateAction::make()
                 ->label('Ajukkan Judul')
+                ->modalHeading('Form Pengajuan Judul')
+                ->modalSubmitActionLabel('Kirim')
+                ->modalCancelAction(false)
+                ->createAnother(false)
                 ->visible(!$skripsiDisetujuiExists),
         ];
     }

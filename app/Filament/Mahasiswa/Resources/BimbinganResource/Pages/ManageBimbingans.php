@@ -23,6 +23,10 @@ class ManageBimbingans extends ManageRecords
         return [
             Actions\CreateAction::make()
                 ->label('Buat Log Bimbingan')
+                ->modalHeading('Form Log Bimbingan')
+                ->modalSubmitActionLabel('Buat')
+                ->modalCancelAction(false)
+                ->createAnother(false)
                 ->visible($skripsiDisetujuiExists),
         ];
     }

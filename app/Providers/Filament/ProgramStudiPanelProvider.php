@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\CheckRole;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -25,8 +26,9 @@ class ProgramStudiPanelProvider extends PanelProvider
         return $panel
             ->id('program-studi')
             ->path('program-studi')
+            ->darkMode(false)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => "#003F88",
             ])
             ->discoverResources(in: app_path('Filament/ProgramStudi/Resources'), for: 'App\\Filament\\ProgramStudi\\Resources')
             ->discoverPages(in: app_path('Filament/ProgramStudi/Pages'), for: 'App\\Filament\\ProgramStudi\\Pages')
@@ -35,8 +37,6 @@ class ProgramStudiPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/ProgramStudi/Widgets'), for: 'App\\Filament\\ProgramStudi\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -48,6 +48,7 @@ class ProgramStudiPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                CheckRole::class . ':Program Studi'
             ])
             ->authMiddleware([
                 Authenticate::class,

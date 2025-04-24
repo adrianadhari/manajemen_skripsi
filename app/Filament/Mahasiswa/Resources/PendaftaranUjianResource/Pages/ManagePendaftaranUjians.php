@@ -4,6 +4,7 @@ namespace App\Filament\Mahasiswa\Resources\PendaftaranUjianResource\Pages;
 
 use App\Filament\Mahasiswa\Resources\PendaftaranUjianResource;
 use App\Models\BerkasUjian;
+use App\Models\Bimbingan;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
 
@@ -18,6 +19,10 @@ class ManagePendaftaranUjians extends ManageRecords
         return [
             Actions\CreateAction::make()
                 ->label('Daftar Ujian')
+                ->modalHeading('Form Pendaftaran Ujian')
+                ->modalSubmitActionLabel('Kirim')
+                ->modalCancelAction(false)
+                ->createAnother(false)
                 ->visible(function () {
                     $user = auth()->user();
                     $skripsiId = $user->skripsi()->where('status', 'Disetujui')->value('id');
@@ -25,8 +30,9 @@ class ManagePendaftaranUjians extends ManageRecords
                         ->pluck('jenis_ujian')
                         ->unique()
                         ->toArray();
+                    $jumlahBimbingan = Bimbingan::where('skripsi_id', $skripsiId)->count();
 
-                    return count($jenisUjian) < 3;
+                    return count($jenisUjian) < 3 && $jumlahBimbingan >= 6;
                 })
                 ->mutateFormDataUsing(function (array $data) {
 

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\CheckRole;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -25,8 +26,9 @@ class DosenPanelProvider extends PanelProvider
         return $panel
             ->id('dosen')
             ->path('dosen')
+            ->darkMode(false)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => "#003F88",
             ])
             ->discoverResources(in: app_path('Filament/Dosen/Resources'), for: 'App\\Filament\\Dosen\\Resources')
             ->discoverPages(in: app_path('Filament/Dosen/Pages'), for: 'App\\Filament\\Dosen\\Pages')
@@ -35,8 +37,6 @@ class DosenPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Dosen/Widgets'), for: 'App\\Filament\\Dosen\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -48,6 +48,7 @@ class DosenPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                CheckRole::class . ':Dosen'
             ])
             ->authMiddleware([
                 Authenticate::class,
