@@ -35,30 +35,25 @@ class ProgresMahasiswaResource extends Resource
             ->query(
                 User::query()
                     ->where('role', 'Mahasiswa')
-                    ->whereHas('skripsi')
-                    ->with(['skripsi.dosen', 'skripsi.coDosen', 'skripsi.bimbingans'])
+                    ->whereHas('skripsiDisetujui')
+                    ->with(['skripsiDisetujui.dosen', 'skripsiDisetujui.coDosen', 'skripsiDisetujui.bimbingans'])
             )
             ->columns([
                 TextColumn::make('name')->label('Nama Mahasiswa'),
                 TextColumn::make('no_induk')->label('NPM'),
 
-                TextColumn::make('nama_pembimbing')
-                    ->label('Nama Pembimbing')
-                    ->formatStateUsing(function ($state, $record) {
-                        $pembimbing1 = $record->skripsi?->dosen?->name;
-                        $pembimbing2 = $record->skripsi?->coDosen?->name;
-                        return collect([$pembimbing1, $pembimbing2])
-                            ->filter()
-                            ->implode(', ');
-                    }),
+                TextColumn::make('skripsiDisetujui.dosen.name')
+                    ->label('Pembimbing 1'),
+                TextColumn::make('skripsiDisetujui.coDosen.name')
+                    ->label('Pembimbing 2'),
 
                 TextColumn::make('skripsi.judul')
                     ->label('Judul Skripsi')
                     ->wrap(),
 
-                TextColumn::make('jumlah_bimbingan')
-                    ->label('Jumlah Log Bimbingan')
-                    ->formatStateUsing(fn($state, $record) => $record->skripsi?->bimbingans?->count() ?? 0)
+                TextColumn::make('Jumlah Bimbingan')
+                    ->label('Jumlah Bimbingan')
+                    ->getStateUsing(fn($record) => $record->skripsiDisetujui?->bimbingans->count() ?? 0)
 
             ])
             ->filters([

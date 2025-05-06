@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->semuaSkripsi && $this->semuaSkripsi->contains(fn($skripsi) => $skripsi->status === 'Disetujui');
     }
+
+    public function skripsiDisetujui()
+    {
+        return $this->hasOne(Skripsi::class, 'mahasiswa_id')->where('status', 'Disetujui');
+    }
 }
