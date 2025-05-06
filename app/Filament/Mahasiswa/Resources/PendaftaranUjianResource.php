@@ -21,6 +21,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Card;
+
 
 class PendaftaranUjianResource extends Resource
 {
@@ -35,6 +38,39 @@ class PendaftaranUjianResource extends Resource
 
     public static function form(Form $form): Form
     {
+        //tambahan
+        $user = auth()->user();
+        $skripsi = $user->skripsi()->where('status', 'Disetujui')->first();
+
+        if (! $skripsi) {
+            return $form->schema([
+                Placeholder::make('info')
+                    ->content('Skripsi kamu belum disetujui oleh dosen pembimbing.')
+            ]);
+        }
+
+        $jenisUjianBolehDaftar = null;
+        if ($skripsi->seminar_proposal_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Seminar Proposal')->exists()) {
+            $jenisUjianBolehDaftar = 'Seminar Proposal';
+        } elseif ($skripsi->seminar_hasil_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Seminar Hasil')->exists()) {
+            $jenisUjianBolehDaftar = 'Seminar Hasil';
+        } elseif ($skripsi->sidang_skripsi_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Sidang Skripsi')->exists()) {
+            $jenisUjianBolehDaftar = 'Sidang Skripsi';
+        }
+
+        if (! $jenisUjianBolehDaftar) {
+            return $form->schema([
+                Card::make()
+                    ->schema([
+                Placeholder::make('Info')
+                    ->content('⏳ Menunggu Persetujuan Dosen Untuk Melanjutkan Ke Tahap Pendaftaran Ujian.')
+                    ])
+                    ->extraAttributes([
+                        'class' => 'bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-md',])
+            ]);
+    }
+
+    //sampai sini
         return $form
             ->schema([
                 Hidden::make('skripsi_id')
@@ -84,6 +120,16 @@ class PendaftaranUjianResource extends Resource
                         ->label('Proposal Skripsi Bertanda Tangan')
                         ->directory('berkas-ujian')
                         ->required()
+                        ->placeholder('PDF maksimal 5MB')
+                        ->maxSize(5120)
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
+
+                    FileUpload::make('berkas_surat_pernyataan_bermaterai')
+                        ->label('Surat Pertanyaan Bermaterai')
+                        ->directory('berkas-ujian')
+                        ->required()
+                        ->placeholder('PDF maksimal 5MB')
+                        ->maxSize(5120)
                         ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
 
 
@@ -92,11 +138,11 @@ class PendaftaranUjianResource extends Resource
                         ->directory('berkas-ujian')
                         ->required()
                         ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Hasil', 'Sidang Skripsi'])),
-                    FileUpload::make('berkas_sheet_bimbingan')
-                        ->label('Fotocopy review sheet bimbingan skripsi')
-                        ->directory('berkas-ujian')
-                        ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                    // FileUpload::make('berkas_sheet_bimbingan')
+                    //     ->label('Fotocopy review sheet bimbingan skripsi')
+                    //     ->directory('berkas-ujian')
+                    //     ->required()
+                    //     ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
                     FileUpload::make('berkas_transkrip_nilai')
                         ->label('Transkrip nilai yang sudah lengkap')
                         ->directory('berkas-ujian')
@@ -149,11 +195,11 @@ class PendaftaranUjianResource extends Resource
                         ->directory('berkas-ujian')
                         ->required()
                         ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
-                    FileUpload::make('berkas_stopmap')
-                        ->label('Stopmap warna biru (2 buah)')
-                        ->directory('berkas-ujian')
-                        ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                    // FileUpload::make('berkas_stopmap')
+                    //     ->label('Stopmap warna biru (2 buah)')
+                    //     ->directory('berkas-ujian')
+                    //     ->required()
+                    //     ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
                     FileUpload::make('berkas_turnitin_jurnal')
                         ->label('Surat keterangan turnitin jurnal dari perpustakaan')
                         ->directory('berkas-ujian')

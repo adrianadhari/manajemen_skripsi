@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+@import '../../../../vendor/filament/filament/resources/css/base.css';
+
+@config './tailwind.config.js';
+
+.fi-sidebar {
+    background-color: #EEF4FA !important;
+    color: #003F88;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Semua teks di sidebar putih, paksa! */
+.fi-sidebar nav a,
+.fi-sidebar nav button,
+.fi-sidebar nav a span {
+    background-color: transparent !important;
+    color:  #003F88 !important;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Aktif link tetap putih */
+.fi-sidebar nav a[data-state="active"],
+.fi-sidebar nav button[data-state="active"] {
+    background-color: #FFC107 !important;
+    color: #003F88 !important;
+}
+
+.fi-sidebar nav a:hover:not([data-state="active"]),
+.fi-sidebar nav button:hover:not([data-state="active"]) {
+    background-color: #75b7ff !important;
+    color:  white !important;
+}
+
+/* Smooth animasi semua nav */
+.fi-sidebar nav a,
+.fi-sidebar nav button {
+    color: black !important;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Semua Input, Select, dan Textarea */
+input.fi-input, select.fi-select, textarea.fi-textarea {
+    background-color: #f8f9fa; /* Background abu muda */
+    border: 1px solid #003F88; /* Border biru */
+    color: #003F88; /* Teks biru */
+    border-radius: 8px; /* Biar rounded */
+    padding: 0.75rem 1rem;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Fokus di input */
+input.fi-input:focus, select.fi-select:focus, textarea.fi-textarea:focus {
+    border-color: #FFC107; /* Border fokus kuning */
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.4); /* Glow efek fokus */
+    background-color: #ffffff; /* Pas fokus background putih */
+    outline: none;
+}
+
+/* Placeholder Style */
+input.fi-input::placeholder,
+textarea.fi-textarea::placeholder {
+    color: #999; /* Placeholder warna abu */
+    opacity: 1;
+}
+
+
+/* Select Dropdown */
+select.fi-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23003F88' d='M2 0L0 2h4L2 0zm0 5L0 3h4l-2 2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+}
+
+/* === Top Navbar (Header) Styling === */
+.fi-topbar {
+    background-color: #003F88 !important; /* Background biru */
+    color: #EEF4FA !important; /* Semua teks putih */
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2); /* Shadow elegan */
+    border-bottom: 1px solid #EEF4FA; /* Tambahan border bawah lebih gelap */
+}
+
+/* Semua teks di topbar */
+.fi-topbar .fi-topbar-item,
+.fi-topbar button,
+.fi-topbar a {
+    color: #EEF4FA !important;
+    transition: color 0.3s ease;
+}
+
+/* Hover di topbar */
+.fi-topbar a:hover,
+.fi-topbar button:hover {
+    color: #FFC107 !important; /* Hover kuning untuk interaksi */
+}
+
+/* Logo di navbar */
+.fi-topbar .fi-topbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.fi-main-card, .fi-section {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.fi-ta-header {
+    background-color: #f9fafb;
+    color: #003F88;
+    font-weight: 600;
+}
+
+.fi-ta-row:nth-child(even) {
+    background-color: #f0f4ff;
+}
+.fi-ta-row:nth-child(odd) {
+    background-color: #ffffff;
+}
+.fi-ta-row:hover {
+    background-color: #dbeafe !important;
+    transition: background-color 0.2s ease-in-out;
+}
+.fi-ta-cell {
+    color: #003F88;
+}
+
+/* === Table Styling === */
+
+/* Header tabel */
+
+
+/* Baris tabel zebra stripes */
+.fi-ta-row:nth-child(even) {
+    background-color: #f0f4ff; /* Biru muda untuk genap */
+}
+.fi-ta-row:nth-child(odd) {
+    background-color: white; /* Putih untuk ganjil */
+}
+
+/* Hover effect saat mouse di atas row */
+.fi-ta-row:hover {
+    background-color: #dbeafe !important; /* Biru lebih soft pas hover */
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Border antar baris */
+.fi-ta-row {
+    border-bottom: 1px solid #e0e7ff; /* Border soft */
+}
+
+/* Warna teks tabel */
+.fi-ta-cell {
+    color: #003F88; /* Teks biru gelap */
+}
+
+/* Input, Select, Textarea */
+input.fi-input, select.fi-select, textarea.fi-textarea {
+    background-color: #f8f9fa;
+    border: 1px solid #003F88;
+    color: #003F88;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+input.fi-input:focus, select.fi-select:focus, textarea.fi-textarea:focus {
+    border-color: #FFC107;
+    box-shadow: 0 0 0 3px 0#FFC107;
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Placeholder */
+input.fi-input::placeholder,
+textarea.fi-textarea::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+/* Select dropdown */
+select.fi-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23003F88' d='M2 0L0 2h4L2 0zm0 5L0 3h4l-2 2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.65rem auto;
+}

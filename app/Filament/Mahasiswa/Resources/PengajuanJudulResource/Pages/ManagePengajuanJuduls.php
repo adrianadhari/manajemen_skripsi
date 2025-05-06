@@ -10,7 +10,7 @@ use Filament\Resources\Pages\ManageRecords;
 
 class ManagePengajuanJuduls extends ManageRecords
 {
-    protected static string $resource = PengajuanJudulResource::class;
+    protected static string $resource = PengajuanJudulResource::class; //menghubungkan file ini dengan PengajuanJudulResource, supaya bisa ambil schema dan table yang sudah kamu definisikan di sana.
 
 
     protected function getHeaderActions(): array

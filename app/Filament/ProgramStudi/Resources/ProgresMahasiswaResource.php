@@ -53,7 +53,8 @@ class ProgresMahasiswaResource extends Resource
                     }),
 
                 TextColumn::make('skripsi.judul')
-                    ->label('Judul Skripsi'),
+                    ->label('Judul Skripsi')
+                    ->wrap(),
 
                 TextColumn::make('jumlah_bimbingan')
                     ->label('Jumlah Log Bimbingan')

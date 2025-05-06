@@ -32,15 +32,20 @@
     {{-- Hero --}}
     <section class="hero min-h-[100vh] bg-[#EEF4FA] w-full pt-20 flex items-center">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <p class="text-xl font-semibold">Selamat Datang di</p>
-                <p class="text-[#003F88] font-extrabold text-5xl leading-normal">Sistem Informasi Manajemen Skripsi
-                    Program Studi Sistem Informasi</p>
-                <p class="text-lg">Kelola seluruh proses skripsi dari pengajuan judul, seminar,
-                    hingga sidang dalam satu sistem terintegrasi.</p>
+                <p class="text-[#003F88] font-semibold text-4xl leading-normal">Sistem Informasi Manajemen Skripsi
+                    <span class="relative inline-block">
+                        <span class="relative z-10">Program Studi Sistem Informasi</span>
+                        <svg class="absolute inset-x-0 bottom-0 h-3 z-0" viewBox="0 0 100 20" preserveAspectRatio="none">
+                          <path d="M0,10 Q25,0 50,10 T100,10 L100,20 L0,20 Z" fill="#FACC15" opacity="0.8" />
+                        </svg>
+                      </span></p>
+                <p class="text-lg">Kelola seluruh proses skripsi dari pengajuan judul, bimbingan online dan pendaftaran 
+                    seminar hingga sidang dalam satu sistem terintegrasi.</p>
             </div>
             <div class="max-w-2xl">
-                <div class="bg-white p-11 rounded-3xl">
+                <div class="bg-white p-1 rounded-2xl">
                     <img src="{{ asset('images/ibik-building.png') }}" alt="IBIK Building" class="w-full">
                 </div>
             </div>
@@ -58,44 +63,41 @@
                 <p class="font-medium text-lg">Meningkatkan perjalanan akademis Anda dengan fitur
                     'Pengajuan Judul' karena setiap penelitian hebat dimulai
                     dengan judul yang baik</p>
-                <div class="flex items-center justify-end">
+                {{-- <div class="flex items-center justify-end">
                     <a href="#" class=" text-[#FFCC00] font-medium text-lg">Lihat Selengkapnya
                     </a>
                     <x-heroicon-o-chevron-right class="h-6 w-6 text-gray-500" />
-                </div>
+                </div> --}}
             </div>
             <div class="rounded-2xl p-9 border border-[#003F88] space-y-3">
                 <p class="text-[#003F88] font-bold text-3xl">Kontrol Skripsi</p>
-                <p class="font-medium text-lg">Meningkatkan perjalanan akademis Anda dengan fitur
-                    'Pengajuan Judul' karena setiap penelitian hebat dimulai
-                    dengan judul yang baik</p>
-                <div class="flex items-center justify-end">
+                <p class="font-medium text-lg">Pantau perkembangan skripsi Anda dengan mudah! Cek komentar dosen, 
+                    lihat revisi yang harus dilakukan, dan ikuti setiap tahapan bimbingan dengan lebih terarah.</p>
+                {{-- <div class="flex items-center justify-end">
                     <a href="#" class=" text-[#FFCC00] font-medium text-lg">Lihat Selengkapnya
                     </a>
                     <x-heroicon-o-chevron-right class="h-6 w-6 text-gray-500" />
-                </div>
+                </div> --}}
             </div>
             <div class="rounded-2xl p-9 border border-[#003F88] space-y-3">
                 <p class="text-[#003F88] font-bold text-3xl">Bimbingan Online</p>
-                <p class="font-medium text-lg">Meningkatkan perjalanan akademis Anda dengan fitur
-                    'Pengajuan Judul' karena setiap penelitian hebat dimulai
-                    dengan judul yang baik</p>
-                <div class="flex items-center justify-end">
+                <p class="font-medium text-lg">Pantau perkembangan bimbingan virtual secara praktis! Fitur 
+                    monitor kami menyajikan ringkasan sesi untuk mahasiswa dan dosen pembimbing dengan efisiensi maksimal.</p>
+                {{-- <div class="flex items-center justify-end">
                     <a href="#" class=" text-[#FFCC00] font-medium text-lg">Lihat Selengkapnya
                     </a>
                     <x-heroicon-o-chevron-right class="h-6 w-6 text-gray-500" />
-                </div>
+                </div> --}}
             </div>
             <div class="rounded-2xl p-9 border border-[#003F88] space-y-3">
                 <p class="text-[#003F88] font-bold text-3xl">Penjadwalan Seminar dan Sidang</p>
-                <p class="font-medium text-lg">Meningkatkan perjalanan akademis Anda dengan fitur
-                    'Pengajuan Judul' karena setiap penelitian hebat dimulai
-                    dengan judul yang baik</p>
-                <div class="flex items-center justify-end">
+                <p class="font-medium text-lg">Menata waktu tanpa hambatan! Fitur penjadwalan kami 
+                    mempermudah pengaturan agenda seminar maupun sidang dengan akurasi dan efisiensi.</p>
+                {{-- <div class="flex items-center justify-end">
                     <a href="#" class=" text-[#FFCC00] font-medium text-lg">Lihat Selengkapnya
                     </a>
                     <x-heroicon-o-chevron-right class="h-6 w-6 text-gray-500" />
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
@@ -105,17 +107,17 @@
     {{-- Footer --}}
     <footer class="bg-[#EEF4FA] py-20 w-full">
         <div class="container mx-auto flex items-center justify-between">
-            <div class="space-y-10">
+            <div class="space-y-5">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo IBIK">
                 <p class="text-[#003F88] font-extrabold text-5xl">Need Help</p>
-                <p class="text-[#003F88] font-semibold text-7xl">with anything?</p>
+                <p class="text-[#003F88] font-regular text-7xl">with anything?</p>
                 <div class="flex">
-                    <x-heroicon-o-map-pin class="h-6 w-6 text-gray-500" />
+                    <x-heroicon-o-map-pin class="h-5 w-10 text-gray-500" />
                     <p class="font-semibold">Rangga Gading No.01, Gudang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat
                         16123</p>
                 </div>
             </div>
-            <p class="text-[#003F88] font-extrabold text-5xl">Contact Us</p>
+            <p class="text-[#003F88] font-semibold text-2xl">Contact Us</p>
         </div>
     </footer>
 

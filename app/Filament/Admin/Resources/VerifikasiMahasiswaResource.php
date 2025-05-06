@@ -29,6 +29,7 @@ class VerifikasiMahasiswaResource extends Resource
     protected static ?string $slug = 'verifikasi-mahasiswa';
     protected static ?int $navigationSort = 1;
 
+
     public static function form(Form $form): Form
     {
         return $form
@@ -36,6 +37,7 @@ class VerifikasiMahasiswaResource extends Resource
                 //
             ]);
     }
+
 
     public static function table(Table $table): Table
     {

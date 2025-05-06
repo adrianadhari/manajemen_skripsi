@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): void //buat tabel
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -24,7 +24,7 @@ return new class extends Migration
         });
 
 
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('sessions', function (Blueprint $table) { //menyimpan data login pengguna. Ini bagian dari fitur "remember me" atau session management bawaan Laravel.
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -37,7 +37,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down(): void //hapus tabel
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');

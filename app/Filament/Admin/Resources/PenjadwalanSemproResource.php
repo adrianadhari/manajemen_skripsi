@@ -16,7 +16,12 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\SoftDeletingScope; 
+use Filament\Resources\Components\Tab; 
+use Filament\Forms\Components\Tabs;
+
+
+
 
 class PenjadwalanSemproResource extends Resource
 {
@@ -28,6 +33,7 @@ class PenjadwalanSemproResource extends Resource
     protected static ?string $slug = 'seminar-proposal';
     protected static ?string $navigationGroup = 'Penjadwalan Ujian';
     protected static ?int $navigationSort = 2;
+    
 
     public static function form(Form $form): Form
     {
@@ -59,6 +65,8 @@ class PenjadwalanSemproResource extends Resource
                     ->label('Mahasiswa'),
                 TextColumn::make('skripsi.mahasiswa.no_induk')
                     ->label('NPM'),
+                TextColumn::make('skripsi.kelas')
+                    ->label('Kelas'),
                 TextColumn::make('skripsi.judul')
                     ->label('Judul')
                     ->wrap(),
@@ -66,7 +74,11 @@ class PenjadwalanSemproResource extends Resource
                     ->label('Dosen Pembimbing'),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('Belum Dijadwalkan')
+                  ->query(fn (Builder $query) => $query->whereNull('tanggal_seminar')),
+
+                Tables\Filters\Filter::make('Sudah Dijadwalkan')
+                    ->query(fn (Builder $query) => $query->whereNotNull('tanggal_seminar')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

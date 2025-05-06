@@ -66,7 +66,11 @@ class PenjadwalanSemhasResource extends Resource
                     ->label('Dosen Pembimbing'),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('Belum Dijadwalkan')
+                  ->query(fn (Builder $query) => $query->whereNull('tanggal_seminar')),
+
+                Tables\Filters\Filter::make('Sudah Dijadwalkan')
+                    ->query(fn (Builder $query) => $query->whereNotNull('tanggal_seminar')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

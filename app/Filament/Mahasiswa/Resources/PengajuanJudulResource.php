@@ -5,7 +5,7 @@ namespace App\Filament\Mahasiswa\Resources;
 use App\Filament\Mahasiswa\Resources\PengajuanJudulResource\Pages;
 use App\Filament\Mahasiswa\Resources\PengajuanJudulResource\RelationManagers;
 use App\Models\PengajuanJudul;
-use App\Models\Skripsi;
+use App\Models\Skripsi; //model utama
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -24,11 +24,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PengajuanJudulResource extends Resource
 {
-    protected static ?string $model = Skripsi::class;
+    protected static ?string $model = Skripsi::class; //resource ini mengelola data dari tabel skripsis.
 
     protected static ?string $navigationIcon = 'heroicon-o-plus-circle';
-    protected static ?string $navigationLabel = 'Pengajuan Judul';
-    protected static ?string $pluralLabel = 'Daftar Judul';
+    protected static ?string $navigationLabel = 'Pengajuan Judul'; //nama menu sidebar
+    protected static ?string $pluralLabel = 'Daftar Judul'; //judul halaman
     protected static ?string $title = 'Daftar Judul';
     protected static ?string $slug = 'pengajuan-judul';
     protected static ?int $navigationSort = 1;
@@ -58,6 +58,15 @@ class PengajuanJudulResource extends Resource
                 FileUpload::make('attachment')
                     ->label('Masukan Draft Pengajuan Judul Penelitian')
                     ->directory('draft_outline')
+                    ->placeholder('PDF maksimal 5MB')
+                    ->maxSize(5120)
+                    ->columnSpanFull()
+                    ->visible(fn(string $operation): bool => $operation !== 'view'),
+                FileUpload::make('transkrip_nilai')
+                    ->label('Upload Transkrip Nilai')
+                    ->directory('transkrip_nilai')
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->placeholder('PDF maksimal 5MB')
                     ->maxSize(5120)
                     ->columnSpanFull()
                     ->visible(fn(string $operation): bool => $operation !== 'view'),
@@ -84,7 +93,7 @@ class PengajuanJudulResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Skripsi::query()->where('mahasiswa_id', auth()->user()->id))
+            ->query(Skripsi::query()->where('mahasiswa_id', auth()->user()->id)) //hanya menampilkan data milik mahasiswa yang sedang login.
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Tanggal Pengajuan')
@@ -118,7 +127,7 @@ class PengajuanJudulResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePengajuanJuduls::route('/'),
+            'index' => Pages\ManagePengajuanJuduls::route('/'), //menunjuk ke page utama resource
         ];
     }
 }

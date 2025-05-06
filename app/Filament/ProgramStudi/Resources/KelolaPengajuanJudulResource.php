@@ -70,6 +70,10 @@ class KelolaPengajuanJudulResource extends Resource
                                     Placeholder::make('attachment')->label('File Draft Outline')
                                         ->content(fn($get) => new HtmlString('<a href="' . asset('storage/' . $get('attachment')) . '" target="_blank" class="text-primary underline">Lihat File</a>'))
                                         ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'filament-tables-text-column']),
+                                    Placeholder::make('attachment')->label('Transkrip Nilai')
+                                        ->content(fn($get) => new HtmlString('<a href="' . asset('storage/' . $get('attachment')) . '" target="_blank" class="text-primary underline">Lihat Transkrip Nilai</a>'))
+                                        ->columnSpanFull()
                                         ->extraAttributes(['class' => 'filament-tables-text-column'])
                                 ])
                                 ->columns(2)

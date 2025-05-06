@@ -24,33 +24,35 @@ class MahasiswaPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('mahasiswa')
-            ->path('mahasiswa')
-            ->darkMode(false)
+            ->path('mahasiswa') //mahaisswa akan mengakses dashboard di url/mahasiswa
+            ->theme(asset('css/filament/mahasiswa/theme.css')) //theme custom pakai tailwind
+            ->darkMode(false) //kalau mau terang ya ubah jadi true
             ->colors([
-                'primary' => "#003F88",
+                'primary' => "#003F88", //set warna utama jadi biru.
             ])
-            ->discoverResources(in: app_path('Filament/Mahasiswa/Resources'), for: 'App\\Filament\\Mahasiswa\\Resources')
-            ->discoverPages(in: app_path('Filament/Mahasiswa/Pages'), for: 'App\\Filament\\Mahasiswa\\Pages')
+            ->discoverResources(in: app_path('Filament/Mahasiswa/Resources'), for: 'App\\Filament\\Mahasiswa\\Resources') //Otomatis mencari resource ( model dan tabel data) 
+            ->discoverPages(in: app_path('Filament/Mahasiswa/Pages'), for: 'App\\Filament\\Mahasiswa\\Pages') //Sama seperti di atas, tapi untuk halaman statis seperti dashboard custom
             ->pages([
-                Pages\Dashboard::class,
+                Pages\Dashboard::class, //menambahkan halaman dashboard bawaan dari Filament.
             ])
-            ->discoverWidgets(in: app_path('Filament/Mahasiswa/Widgets'), for: 'App\\Filament\\Mahasiswa\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Mahasiswa/Widgets'), for: 'App\\Filament\\Mahasiswa\\Widgets') //mencari widget khusus mahasiswa
             ->widgets([])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-                CheckRole::class . ':Mahasiswa',
+                EncryptCookies::class, //Mengenkripsi cookie
+                AddQueuedCookiesToResponse::class, //AddQueuedCookiesToResponse → 
+                StartSession::class, //Menjalankan sesi pengguna
+                AuthenticateSession::class, //otentikasi sesi
+                ShareErrorsFromSession::class, //Menyediakan error dari session (buat validasi)
+                VerifyCsrfToken::class, //Melindungi dari serangan CSRF
+                SubstituteBindings::class, //Mengatur route model binding
+                DisableBladeIconComponents::class, // Menonaktifkan ikon blade (khusus Filament)
+                DispatchServingFilamentEvent::class, //Men-trigger event saat panel diload
+                CheckRole::class . ':Mahasiswa', //memastikan hanya Mahasiswa yang bisa akses
             ])
             ->authMiddleware([
-                Authenticate::class,
+                Authenticate::class, //otentikasi standar Laravel, memastikan hanya user yang sudah login yang bisa masuk.
             ]);
     }
 }

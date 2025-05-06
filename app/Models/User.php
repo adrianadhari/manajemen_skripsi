@@ -16,7 +16,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
+    protected $hidden = [ //Agar password dan token tidak ikut muncul saat data user dikirim ke frontend atau API (diserialisasi).
         'password',
         'remember_token',
     ];
@@ -24,18 +24,18 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
+            'password' => 'hashed', //proses mengacak data (misal password) jadi bentuk yang nggak bisa dibaca 
         ];
     }
 
     public function skripsi()
     {
-        return $this->hasOne(Skripsi::class, 'mahasiswa_id');
+        return $this->hasOne(Skripsi::class, 'mahasiswa_id'); //satu mahasiswa hanya boleh punya 1 skripsi
     }
 
     public function semuaSkripsi()
     {
-        return $this->hasMany(Skripsi::class, 'mahasiswa_id');
+        return $this->hasMany(Skripsi::class, 'mahasiswa_id'); //relasi untuk untuk ambil semua skripsi yang pernah diajukan
     }
 
     protected static function booted()

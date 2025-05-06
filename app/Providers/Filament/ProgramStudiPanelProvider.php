@@ -24,6 +24,8 @@ class ProgramStudiPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
+            ->theme(asset('css/filament/mahasiswa/theme.css'))
             ->id('program-studi')
             ->path('program-studi')
             ->darkMode(false)

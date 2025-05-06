@@ -24,6 +24,8 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
+            ->theme(asset('css/filament/mahasiswa/theme.css'))
             ->id('admin')
             ->path('admin')
             ->darkMode(false)
