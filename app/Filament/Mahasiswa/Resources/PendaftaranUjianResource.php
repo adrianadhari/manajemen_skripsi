@@ -38,7 +38,7 @@ class PendaftaranUjianResource extends Resource
 
     public static function form(Form $form): Form
     {
-        //tambahan
+        //
         $user = auth()->user();
         $skripsi = $user->skripsi()->where('status', 'Disetujui')->first();
 
@@ -70,7 +70,7 @@ class PendaftaranUjianResource extends Resource
             ]);
     }
 
-    //sampai sini
+    //
         return $form
             ->schema([
                 Hidden::make('skripsi_id')
@@ -131,7 +131,15 @@ class PendaftaranUjianResource extends Resource
                         ->placeholder('PDF maksimal 5MB')
                         ->maxSize(5120)
                         ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
-
+                    
+                    FileUpload::make('berkas_surat_riset')
+                        ->label('Surat Riset')
+                        ->directory('berkas-ujian')
+                        ->required()
+                        ->placeholder('PDF maksimal 5MB')
+                        ->maxSize(5120)
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
+                    
 
                     FileUpload::make('berkas_soft_cover')
                         ->label('Soft Cover Draft Skripsi yang sudah ditandatangani oleh pembimbing (2eks)')
@@ -204,7 +212,7 @@ class PendaftaranUjianResource extends Resource
                         ->label('Surat keterangan turnitin jurnal dari perpustakaan')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                        ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Proposal', 'Sidang Skripsi'])),
                 ])->columnSpanFull(),
             ]);
     }

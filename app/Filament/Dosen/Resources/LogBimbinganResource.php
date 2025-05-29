@@ -50,7 +50,8 @@ class LogBimbinganResource extends Resource
             ->columns([
                 TextColumn::make('mahasiswa.name')->label('Nama Mahasiswa'),
                 TextColumn::make('mahasiswa.no_induk')->label('NPM'),
-                TextColumn::make('judul')->label('Judul Skripsi'),
+                TextColumn::make('judul')->label('Judul Skripsi')
+                ->wrap(),
                 TextColumn::make('jumlah_log')
                     ->label('Jumlah Log Bimbingan')
                     ->state(fn(Skripsi $record) => $record->bimbingans()->count()),
@@ -60,57 +61,100 @@ class LogBimbinganResource extends Resource
                     ->label('Lihat Log')
                     ->url(fn(Skripsi $record) => LogBimbinganResource::getUrl(name: 'edit', parameters: ['record' => $record]))
                     ->icon('heroicon-o-eye'),
-                Action::make('approve_seminar_proposal')
-                    ->label('Approve Seminar Proposal')
-                    ->color('success')
-                    ->requiresConfirmation() // << INI tambahan penting
-                    ->modalHeading('Konfirmasi Persetujuan')
-                    ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar proposal ini?')
-                    ->modalButton('Ya, Setujui')
-                    ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 6 && $record->seminar_proposal_approved_at == null)
-                    ->action(function (Skripsi $record) {
-                        $record->update(['seminar_proposal_approved_at' => now()]);
-                        Notification::make()
-                            ->title('Seminar Proposal Disetujui')
-                            ->success()
-                            ->send();
-                    }),
+                // Action::make('approve_seminar_proposal')
+                //     ->label('Approve Seminar Proposal')
+                //     ->color('success')
+                //     ->requiresConfirmation() // << INI tambahan penting
+                //     ->modalHeading('Konfirmasi Persetujuan')
+                //     ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar proposal ini?')
+                //     ->modalButton('Ya, Setujui')
+                //     ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 4 && $record->seminar_proposal_approved_at == null)
+                //     ->action(function (Skripsi $record) {
+                //         $record->update(['seminar_proposal_approved_at' => now()]);
+                //         Notification::make()
+                //             ->title('Seminar Proposal Disetujui')
+                //             ->success()
+                //             ->send();
+                //     }),
                     // ->color('success')
                     // ->icon('heroicon-o-check-circle'),
-                Action::make('approve_seminar_hasil')
-                    ->label('Approve Seminar Hasil')
-                    ->color('success')
-                    ->requiresConfirmation() // << INI tambahan penting
-                    ->modalHeading('Konfirmasi Persetujuan')
-                    ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar hasil ini?')
-                    ->modalButton('Ya, Setujui')
-                    ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 6 && $record->seminar_hasil_approved_at == null)
-                    ->action(function (Skripsi $record) { 
-                        $record->update(['seminar_hasil_approved_at' => now()]);
-                        Notification::make()
-                            ->title('Seminar Hasil Disetujui')
-                            ->success()
-                            ->send();
-                    }),
-                    // ->color('success')
-                    // ->icon('heroicon-o-check-circle'),
-                Action::make('approve_sidang')
-                    ->label('Approve Sidang Skripsi')
-                    ->color('success')
-                    ->requiresConfirmation() // << INI tambahan penting
-                    ->modalHeading('Konfirmasi Persetujuan')
-                    ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar hasil ini?')
-                    ->modalButton('Ya, Setujui')
-                    ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 4 && $record->sidang_skripsi_approved_at == null)
-                    ->action(function (Skripsi $record) {
-                        $record->update(['sidang_skripsi_approved_at' => now()]);
-                        Notification::make()
-                            ->title('Sidang Skripsi Disetujui')
-                            ->success()
-                            ->send();
-                    }),
-                    // ->color('success')
-                    // ->icon('heroicon-o-check-circle'),
+                // Action::make('approve_seminar_hasil')
+                //     ->label('Approve Seminar Hasil')
+                //     ->color('success')
+                //     ->requiresConfirmation() // << INI tambahan penting
+                //     ->modalHeading('Konfirmasi Persetujuan')
+                //     ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar hasil ini?')
+                //     ->modalButton('Ya, Setujui')
+                //     ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 4 && $record->seminar_hasil_approved_at == null)
+                //     ->action(function (Skripsi $record) { 
+                //         $record->update(['seminar_hasil_approved_at' => now()]);
+                //         Notification::make()
+                //             ->title('Seminar Hasil Disetujui')
+                //             ->success()
+                //             ->send();
+                //     }),
+                //     // ->color('success')
+                //     // ->icon('heroicon-o-check-circle'),
+                // Action::make('approve_sidang')
+                //     ->label('Approve Sidang Skripsi')
+                //     ->color('success')
+                //     ->requiresConfirmation() // << INI tambahan penting
+                //     ->modalHeading('Konfirmasi Persetujuan')
+                //     ->modalSubheading('Apakah Anda yakin ingin menyetujui seminar hasil ini?')
+                //     ->modalButton('Ya, Setujui')
+                //     ->visible(fn (Skripsi $record) => $record->bimbingans()->count() >= 4 && $record->sidang_skripsi_approved_at == null)
+                //     ->action(function (Skripsi $record) {
+                //         $record->update(['sidang_skripsi_approved_at' => now()]);
+                //         Notification::make()
+                //             ->title('Sidang Skripsi Disetujui')
+                //             ->success()
+                //             ->send();
+                //     }),
+                //     // ->color('success')
+                //     // ->icon('heroicon-o-check-circle'),
+
+
+                // Action::make('approve')
+                //     ->label(fn (Skripsi $record) => 
+                //         !$record->seminar_proposal_approved_at ? 'Approve Seminar Proposal' :
+                //         (!$record->seminar_hasil_approved_at ? 'Approve Seminar Hasil' :
+                //         (!$record->sidang_skripsi_approved_at ? 'Approve Sidang Skripsi' : 'Sudah Semua Disetujui'))
+                //     )
+                //     ->color('success')
+                //     ->requiresConfirmation()
+                //     ->modalHeading(fn (Skripsi $record) =>
+                //         !$record->seminar_proposal_approved_at ? 'Konfirmasi Approve Seminar Proposal' :
+                //         (!$record->seminar_hasil_approved_at ? 'Konfirmasi Approve Seminar Hasil' :
+                //         (!$record->sidang_skripsi_approved_at ? 'Konfirmasi Approve Sidang Skripsi' : ''))
+                //     )
+                //     ->modalSubheading('Apakah Anda yakin ingin menyetujui tahap ini?')
+                //     ->modalButton('Ya, Setujui')
+                //     ->visible(fn (Skripsi $record) => 
+                //         ($record->bimbingans()->count() >= 4 && !$record->seminar_proposal_approved_at) ||
+                //         ($record->bimbingans()->count() >= 4 && !$record->seminar_hasil_approved_at) ||
+                //         ($record->bimbingans()->count() >= 2 && !$record->sidang_skripsi_approved_at)
+                //     )
+                //     ->action(function (Skripsi $record) {
+                //         if (!$record->seminar_proposal_approved_at && $record->bimbingans()->count() >= 4) {
+                //             $record->update(['seminar_proposal_approved_at' => now()]);
+                //             Notification::make()
+                //                 ->title('Seminar Proposal Disetujui')
+                //                 ->success()
+                //                 ->send();
+                //         } elseif (!$record->seminar_hasil_approved_at && $record->bimbingans()->count() >= 4) {
+                //             $record->update(['seminar_hasil_approved_at' => now()]);
+                //             Notification::make()
+                //                 ->title('Seminar Hasil Disetujui')
+                //                 ->success()
+                //                 ->send();
+                //         } elseif (!$record->sidang_skripsi_approved_at && $record->bimbingans()->count() >= 2) {
+                //             $record->update(['sidang_skripsi_approved_at' => now()]);
+                //             Notification::make()
+                //                 ->title('Sidang Skripsi Disetujui')
+                //                 ->success()
+                //                 ->send();
+                //         }
+                //     }),
             
             ])
             ->bulkActions([]);

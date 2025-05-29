@@ -123,7 +123,8 @@ class KelolaPengajuanJudulResource extends Resource
                     ->icon('heroicon-o-clipboard-document-check')
                     ->modalHeading('Verifikasi Judul Skripsi')
                     ->modalSubmitActionLabel('Simpan')
-                    ->color('primary')
+                    ->color('primary'),
+                    
             ])
             ->bulkActions([]);
     }

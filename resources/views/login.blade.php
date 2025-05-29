@@ -33,6 +33,9 @@
                 @csrf
                 <input type="text" name="no_induk" class="p-4 w-full border border-gray-600" placeholder="No. Induk">
                 <input type="password" name="password" class="p-4 w-full border border-gray-600" placeholder="Password">
+                @error('password')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
                 <button type="submit"
                     class="p-4 w-full font-medium bg-[#FFCC00] cursor-pointer text-center">Login</button>
             </form>

@@ -9,7 +9,20 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            $role = Auth::user()->role;
+            if ($role === 'Mahasiswa') {
+                return redirect('/mahasiswa');
+            } elseif ($role === 'Dosen') {
+                return redirect('/dosen');
+            } elseif ($role === 'Program Studi') {
+                return redirect('/program-studi');
+            } elseif ($role === 'Admin') {
+                return redirect('/admin');
+            }
+        }
         return view('login');
+
     }
 
     public function login(Request $request)
