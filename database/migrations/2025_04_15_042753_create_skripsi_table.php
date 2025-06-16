@@ -20,6 +20,16 @@ return new class extends Migration
             $table->foreignId('mahasiswa_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('dosen_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('co_dosen_id')->nullable()->constrained('users')->cascadeOnDelete();
+
+            $table->boolean('is_approved_for_sempro')->default(false);
+            $table->timestamp('approved_for_sempro_at')->nullable();
+
+            $table->boolean('is_approved_for_semhas')->default(false);
+            $table->timestamp('approved_for_semhas_at')->nullable();
+
+            $table->boolean('is_approved_for_sidang')->default(false);
+            $table->timestamp('approved_for_sidang_at')->nullable();
+
             $table->timestamps();
         });
     }

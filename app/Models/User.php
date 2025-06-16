@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Skripsi::class, 'mahasiswa_id')->where('status', 'Disetujui');
     }
+
+    public function skripsiDiajukan()
+    {
+        return $this->hasMany(Skripsi::class, 'mahasiswa_id')->where('status', 'Diajukan');
+    }
 }

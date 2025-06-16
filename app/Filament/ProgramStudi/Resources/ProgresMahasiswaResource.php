@@ -21,14 +21,6 @@ class ProgresMahasiswaResource extends Resource
     protected static ?string $navigationLabel = 'Progres Mahasiswa';
     protected static ?string $pluralLabel = 'Progres Mahasiswa';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -59,7 +51,35 @@ class ProgresMahasiswaResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([])
+            ->actions([
+                Tables\Actions\Action::make('lihat_log')
+                    ->label('Lihat Log Bimbingan')
+                    ->icon('heroicon-o-clipboard-document')
+                    ->modalHeading(fn($record) => 'Log Bimbingan - ' . $record->name)
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Tutup')
+                    ->modalContent(function (User $record) {
+                        $bimbingans = $record->skripsiDisetujui?->bimbingans;
+
+                        if ($bimbingans->isEmpty()) {
+                            return 'Belum ada log bimbingan.';
+                        }
+
+                        $html = '<div class="space-y-4">';
+
+                        foreach ($bimbingans as $bimbingan) {
+                            $html .= '<div class="border p-4 rounded-md bg-gray-50">
+                    <p><strong>Tanggal:</strong> ' . $bimbingan->created_at->format('d-m-Y H:i') . '</p>
+                    <p><strong>Catatan Mahasiswa:</strong><br>' . nl2br(e($bimbingan->catatan_kegiatan)) . '</p>
+                    <p><strong>Evaluasi Dosen:</strong><br>' . nl2br(e($bimbingan->catatan_evaluasi)) . '</p>
+                </div>';
+                        }
+
+                        $html .= '</div>';
+
+                        return new \Illuminate\Support\HtmlString($html);
+                    })
+            ])
             ->bulkActions([]);
     }
 

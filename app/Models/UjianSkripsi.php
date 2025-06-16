@@ -31,4 +31,14 @@ class UjianSkripsi extends Model
     {
         return $query->where('jenis_ujian', 'Sidang Skripsi')->where('status', 'Terverifikasi');
     }
+
+    public function penguji1()
+    {
+        return $this->belongsTo(User::class, 'penguji_1_id');
+    }
+
+    public function penguji2()
+    {
+        return $this->belongsTo(User::class, 'penguji_2_id');
+    }
 }

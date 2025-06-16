@@ -53,11 +53,13 @@ class PengajuanJudulResource extends Resource
                         'Cyber System' => 'Cyber System'
                     ])
                     ->inline()
+                    ->required()
                     ->inlineLabel(false)
                     ->columnSpanFull(),
                 FileUpload::make('attachment')
                     ->label('Upload Draft Outline Pengajuan Judul Penelitian')
                     ->directory('draft_outline')
+                    ->acceptedFileTypes(['application/pdf'])
                     ->placeholder('PDF maksimal 5MB')
                     ->maxSize(5120)
                     ->columnSpanFull()
@@ -73,6 +75,7 @@ class PengajuanJudulResource extends Resource
                 FileUpload::make('attachment')
                     ->label('Upload KRS')
                     ->directory('draft_outline')
+                    ->acceptedFileTypes(['application/pdf'])
                     ->placeholder('PDF maksimal 5MB')
                     ->maxSize(5120)
                     ->columnSpanFull()

@@ -43,7 +43,10 @@ class KelolaPengajuanJudulResource extends Resource
             ->query(
                 User::query()
                     ->where('role', 'Mahasiswa')
-                    ->whereHas('semuaSkripsi')
+                    ->where(function ($query) {
+                        $query->has('skripsiDiajukan', '=', 3)
+                            ->orWhereHas('skripsiDisetujui');
+                    })
             )
             ->columns([
                 TextColumn::make('name')->label('Nama Mahasiswa'),
@@ -124,7 +127,37 @@ class KelolaPengajuanJudulResource extends Resource
                     ->modalHeading('Verifikasi Judul Skripsi')
                     ->modalSubmitActionLabel('Simpan')
                     ->color('primary'),
-                    
+                Action::make('edit_pembimbing')
+                    ->label('Edit Pembimbing')
+                    ->visible(fn(User $record) => $record->skripsiDisetujui()->exists())
+                    ->form(function (User $record) {
+                        $skripsi = $record->skripsiDisetujui()->first();
+
+                        return [
+                            Select::make('dosen_id')
+                                ->label('Dosen Pembimbing 1')
+                                ->options(User::where('role', 'Dosen')->pluck('name', 'id'))
+                                ->required()
+                                ->default($skripsi?->dosen_id),
+
+                            Select::make('co_dosen_id')
+                                ->label('Dosen Pembimbing 2 (Opsional)')
+                                ->options(User::where('role', 'Dosen')->pluck('name', 'id'))
+                                ->nullable()
+                                ->searchable()
+                                ->default($skripsi?->co_dosen_id),
+                        ];
+                    })
+                    ->action(function (array $data, User $record) {
+                        $record->skripsiDisetujui()->update([
+                            'dosen_id' => $data['dosen_id'],
+                            'co_dosen_id' => $data['co_dosen_id'],
+                        ]);
+                    })
+                    ->icon('heroicon-o-pencil')
+                    ->modalHeading('Edit Dosen Pembimbing')
+                    ->modalSubmitActionLabel('Simpan Perubahan'),
+
             ])
             ->bulkActions([]);
     }

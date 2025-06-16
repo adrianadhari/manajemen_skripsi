@@ -26,19 +26,43 @@ class ManagePendaftaranUjians extends ManageRecords
                 ->createAnother(false)
                 ->visible(function () {
                     $user = auth()->user();
-                    $skripsiId = $user->skripsi()->where('status', 'Disetujui')->value('id');
-                    $jenisUjian = \App\Models\UjianSkripsi::where('skripsi_id', $skripsiId)
-                        ->pluck('jenis_ujian')
-                        ->unique()
-                        ->toArray();
-                    $jumlahBimbingan = Bimbingan::where('skripsi_id', $skripsiId)->count();
+                    $skripsi = $user->skripsi()->where('status', 'Disetujui')->first();
 
-                    return count($jenisUjian) < 3 && $jumlahBimbingan >= 6;
+                    if (! $skripsi) return false;
+
+                    // Ambil semua ujian yang pernah diajukan oleh mahasiswa ini
+                    $ujianMahasiswa = \App\Models\UjianSkripsi::where('skripsi_id', $skripsi->id)->get();
+
+                    $terverifikasi = $ujianMahasiswa->where('status', 'Terverifikasi')->pluck('jenis_ujian')->toArray();
+                    $menunggu = $ujianMahasiswa->where('status', 'Menunggu Verifikasi')->pluck('jenis_ujian')->toArray();
+                    $ditolak = $ujianMahasiswa->where('status', 'Ditolak')->pluck('jenis_ujian')->toArray();
+
+                    // === SEMINAR PROPOSAL ===
+                    if (!in_array('Seminar Proposal', $terverifikasi)) {
+                        if (in_array('Seminar Proposal', $menunggu)) return false;
+                        return $skripsi->is_approved_for_sempro;
+                    }
+
+                    // === SEMINAR HASIL ===
+                    if (!in_array('Seminar Hasil', $terverifikasi)) {
+                        if (in_array('Seminar Hasil', $menunggu)) return false;
+                        return $skripsi->is_approved_for_semhas;
+                    }
+
+                    // === SIDANG SKRIPSI ===
+                    if (!in_array('Sidang Skripsi', $terverifikasi)) {
+                        if (in_array('Sidang Skripsi', $menunggu)) return false;
+                        return $skripsi->is_approved_for_sidang;
+                    }
+
+                    return false;
                 })
                 ->mutateFormDataUsing(function (array $data) {
 
                     $this->uploadedFiles = [
                         'Proposal Skripsi Bertanda Tangan' => $data['berkas_proposal'] ?? null,
+                        'Surat Pernyataan Bermaterai' => $data['berkas_surat_pernyataan_bermaterai'] ?? null,
+                        'Surat Riset' => $data['berkas_surat_riset'] ?? null,
                         'Soft Cover Draft Skripsi yang sudah ditandatangani oleh pembimbing (2eks)' => $data['berkas_soft_cover'] ?? null,
                         'Fotocopy review sheet bimbingan skripsi' => $data['berkas_sheet_bimbingan'] ?? null,
                         'Transkrip nilai yang sudah lengkap' => $data['berkas_transkrip_nilai'] ?? null,
@@ -56,7 +80,7 @@ class ManagePendaftaranUjians extends ManageRecords
                     ];
 
                     // Hapus dari data utama sebelum simpan ke ujian_skripsi
-                    unset($data['berkas_proposal'], $data['berkas_soft_cover'], $data['berkas_sheet_bimbingan'], $data['berkas_transkrip_nilai'], $data['berkas_lembar_persetujuan_bimbingan'], $data['berkas_bukti_pembayaran'], $data['berkas_surat_pernyataan_menyelesaikan_skripsi'], $data['berkas_frs'], $data['berkas_surat_pernyataan_tidak_menjiplak'], $data['berkas_sertifikat_keahlian_bnsp'], $data['berkas_soft_cover_jurnal'], $data['berkas_sk_magangkerja'], $data['berkas_bukti_kegiatan_magang'], $data['berkas_stopmap'], $data['berkas_turnitin_jurnal']);
+                    unset($data['berkas_proposal'], $data['berkas_soft_cover'], $data['berkas_sheet_bimbingan'], $data['berkas_transkrip_nilai'], $data['berkas_lembar_persetujuan_bimbingan'], $data['berkas_bukti_pembayaran'], $data['berkas_surat_pernyataan_menyelesaikan_skripsi'], $data['berkas_frs'], $data['berkas_surat_pernyataan_tidak_menjiplak'], $data['berkas_sertifikat_keahlian_bnsp'], $data['berkas_soft_cover_jurnal'], $data['berkas_sk_magangkerja'], $data['berkas_bukti_kegiatan_magang'], $data['berkas_stopmap'], $data['berkas_turnitin_jurnal'], $data['berkas_surat_pernyataan_bermaterai'], $data['berkas_surat_riset']);
 
                     return $data;
                 })

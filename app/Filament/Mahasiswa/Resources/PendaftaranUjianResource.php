@@ -38,39 +38,6 @@ class PendaftaranUjianResource extends Resource
 
     public static function form(Form $form): Form
     {
-        //
-        $user = auth()->user();
-        $skripsi = $user->skripsi()->where('status', 'Disetujui')->first();
-
-        if (! $skripsi) {
-            return $form->schema([
-                Placeholder::make('info')
-                    ->content('Skripsi kamu belum disetujui oleh dosen pembimbing.')
-            ]);
-        }
-
-        $jenisUjianBolehDaftar = null;
-        if ($skripsi->seminar_proposal_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Seminar Proposal')->exists()) {
-            $jenisUjianBolehDaftar = 'Seminar Proposal';
-        } elseif ($skripsi->seminar_hasil_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Seminar Hasil')->exists()) {
-            $jenisUjianBolehDaftar = 'Seminar Hasil';
-        } elseif ($skripsi->sidang_skripsi_approved_at && !UjianSkripsi::where('skripsi_id', $skripsi->id)->where('jenis_ujian', 'Sidang Skripsi')->exists()) {
-            $jenisUjianBolehDaftar = 'Sidang Skripsi';
-        }
-
-        if (! $jenisUjianBolehDaftar) {
-            return $form->schema([
-                Card::make()
-                    ->schema([
-                Placeholder::make('Info')
-                    ->content('⏳ Menunggu Persetujuan Dosen Untuk Melanjutkan Ke Tahap Pendaftaran Ujian.')
-                    ])
-                    ->extraAttributes([
-                        'class' => 'bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-md',])
-            ]);
-    }
-
-    //
         return $form
             ->schema([
                 Hidden::make('skripsi_id')
@@ -78,37 +45,35 @@ class PendaftaranUjianResource extends Resource
                         $user = auth()->user();
                         return $user->skripsi()->where('status', 'Disetujui')->value('id');
                     }),
-                    Select::make('jenis_ujian')
+                Select::make('jenis_ujian')
                     ->label('Jenis Ujian')
                     ->options(function () {
                         $user = auth()->user();
-                        $skripsiId = $user->skripsi()->where('status', 'Disetujui')->value('id');
-                
-                        if (!$skripsiId) {
-                            return []; // Tidak punya skripsi disetujui
+                        $skripsi = $user->skripsi()->where('status', 'Disetujui')->first();
+
+                        if (! $skripsi) {
+                            return [];
                         }
-                
-                        // Ambil semua jenis ujian yang sudah diverifikasi
-                        $ujianTerverifikasi = \App\Models\UjianSkripsi::where('skripsi_id', $skripsiId)
+
+                        $ujianTerverifikasi = \App\Models\UjianSkripsi::where('skripsi_id', $skripsi->id)
                             ->where('status', 'Terverifikasi')
                             ->pluck('jenis_ujian')
                             ->toArray();
-                
-                        // Tentukan urutan ujian
-                        $urutan = [
-                            'Seminar Proposal',
-                            'Seminar Hasil',
-                            'Sidang Skripsi',
-                        ];
-                
-                        // Cari tahap yang belum diverifikasi
-                        foreach ($urutan as $jenis) {
-                            if (!in_array($jenis, $ujianTerverifikasi)) {
-                                return [$jenis => $jenis];
-                            }
+
+                        // Validasi urutan
+                        if (! in_array('Seminar Proposal', $ujianTerverifikasi) && $skripsi->is_approved_for_sempro) {
+                            return ['Seminar Proposal' => 'Seminar Proposal'];
                         }
-                
-                        return []; // Semua ujian sudah diverifikasi
+
+                        if (! in_array('Seminar Hasil', $ujianTerverifikasi) && $skripsi->is_approved_for_semhas) {
+                            return ['Seminar Hasil' => 'Seminar Hasil'];
+                        }
+
+                        if (! in_array('Sidang Skripsi', $ujianTerverifikasi) && $skripsi->is_approved_for_sidang) {
+                            return ['Sidang Skripsi' => 'Sidang Skripsi'];
+                        }
+
+                        return [];
                     })
                     ->required()
                     ->reactive()
@@ -122,7 +87,8 @@ class PendaftaranUjianResource extends Resource
                         ->required()
                         ->placeholder('PDF maksimal 5MB')
                         ->maxSize(5120)
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal')
+                        ->acceptedFileTypes(['application/pdf']),
 
                     FileUpload::make('berkas_surat_pernyataan_bermaterai')
                         ->label('Surat Pertanyaan Bermaterai')
@@ -130,22 +96,25 @@ class PendaftaranUjianResource extends Resource
                         ->required()
                         ->placeholder('PDF maksimal 5MB')
                         ->maxSize(5120)
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
-                    
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal')
+                        ->acceptedFileTypes(['application/pdf']),
+
                     FileUpload::make('berkas_surat_riset')
                         ->label('Surat Riset')
                         ->directory('berkas-ujian')
                         ->required()
                         ->placeholder('PDF maksimal 5MB')
                         ->maxSize(5120)
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal'),
-                    
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Proposal')
+                        ->acceptedFileTypes(['application/pdf']),
+
 
                     FileUpload::make('berkas_soft_cover')
                         ->label('Soft Cover Draft Skripsi yang sudah ditandatangani oleh pembimbing (2eks)')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Hasil', 'Sidang Skripsi'])),
+                        ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Hasil', 'Sidang Skripsi']))
+                        ->acceptedFileTypes(['application/pdf']),
                     // FileUpload::make('berkas_sheet_bimbingan')
                     //     ->label('Fotocopy review sheet bimbingan skripsi')
                     //     ->directory('berkas-ujian')
@@ -155,54 +124,64 @@ class PendaftaranUjianResource extends Resource
                         ->label('Transkrip nilai yang sudah lengkap')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_lembar_persetujuan_bimbingan')
                         ->label('Lembar persetujuan bimbingan dari surat tugas')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_bukti_pembayaran')
                         ->label('Bukti pembayaran SPP dan SKS')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_surat_pernyataan_menyelesaikan_skripsi')
                         ->label('Surat pernyataan untuk menyelesaikan skripsi')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_frs')
                         ->label('FRS semester akhir dari SIAKSES (matakuliah skripsi)')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_surat_pernyataan_tidak_menjiplak')
                         ->label('Surat pernyataan tidak menjiplak skripsi')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Seminar Hasil')
+                        ->acceptedFileTypes(['application/pdf']),
 
 
                     FileUpload::make('berkas_sertifikat_keahlian_bnsp')
                         ->label('Fotocopy sertifikat keahlian BNSP')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_soft_cover_jurnal')
                         ->label('Soft cover berwarna gading draft jurnal ilmiah yang sudah di TTD pembimbing')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_sk_magangkerja')
                         ->label('Surat keterangan selesai magang/kerja')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi')
+                        ->acceptedFileTypes(['application/pdf']),
                     FileUpload::make('berkas_bukti_kegiatan_magang')
                         ->label('Bukti kegiatan magang (bagi yang magang)')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi'),
+                        ->visible(fn(Get $get) => $get('jenis_ujian') === 'Sidang Skripsi')
+                        ->acceptedFileTypes(['application/pdf']),
                     // FileUpload::make('berkas_stopmap')
                     //     ->label('Stopmap warna biru (2 buah)')
                     //     ->directory('berkas-ujian')
@@ -212,7 +191,8 @@ class PendaftaranUjianResource extends Resource
                         ->label('Surat keterangan turnitin jurnal dari perpustakaan')
                         ->directory('berkas-ujian')
                         ->required()
-                        ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Proposal', 'Sidang Skripsi'])),
+                        ->visible(fn(Get $get) => in_array($get('jenis_ujian'), ['Seminar Proposal', 'Sidang Skripsi']))
+                        ->acceptedFileTypes(['application/pdf']),
                 ])->columnSpanFull(),
             ]);
     }
@@ -250,14 +230,29 @@ class PendaftaranUjianResource extends Resource
                 TextColumn::make('tanggal_seminar')
                     ->label('Tanggal Ujian')
                     ->date()
-                    ->placeholder('Belum ditentukan'),
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record->is_schedule_approved_by_prodi && $state
+                            ? \Carbon\Carbon::parse($state)->format('d-m-Y')
+                            : 'Belum ditentukan'
+                    ),
                 TextColumn::make('waktu_seminar')
                     ->label('Waktu Ujian')
                     ->time()
-                    ->placeholder('Belum ditentukan'),
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record->is_schedule_approved_by_prodi && $state
+                            ? \Carbon\Carbon::parse($state)->format('H:i')
+                            : 'Belum ditentukan'
+                    ),
                 TextColumn::make('ruangan')
                     ->label('Ruangan')
-                    ->placeholder('Belum ditentukan')
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record->is_schedule_approved_by_prodi && filled($state)
+                            ? $state
+                            : 'Belum ditentukan'
+                    ),
             ])
             ->filters([
                 //

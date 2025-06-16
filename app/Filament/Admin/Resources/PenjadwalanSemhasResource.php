@@ -6,8 +6,10 @@ use App\Filament\Admin\Resources\PenjadwalanSemhasResource\Pages;
 use App\Filament\Admin\Resources\PenjadwalanSemhasResource\RelationManagers;
 use App\Models\PenjadwalanSemhas;
 use App\Models\UjianSkripsi;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
@@ -40,7 +42,33 @@ class PenjadwalanSemhasResource extends Resource
                     ->label('Waktu Seminar')
                     ->columnSpanFull(),
                 TextInput::make('ruangan')
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
+                Select::make('penguji_1_id')
+                    ->label('Dosen Penguji 1')
+                    ->options(function ($get, $record) {
+                        $skripsi = $record->skripsi;
+                        return User::query()
+                            ->where('role', 'Dosen')
+                            ->where('id', '!=', $skripsi->dosen_id)
+                            ->when($skripsi->co_dosen_id, fn($q) => $q->where('id', '!=', $skripsi->co_dosen_id))
+                            ->pluck('name', 'id');
+                    })
+                    ->required()
+                    ->searchable(),
+
+                Select::make('penguji_2_id')
+                    ->label('Dosen Penguji 2')
+                    ->options(function ($get, $record) {
+                        $skripsi = $record->skripsi;
+                        return User::query()
+                            ->where('role', 'Dosen')
+                            ->where('id', '!=', $skripsi->dosen_id)
+                            ->when($skripsi->co_dosen_id, fn($q) => $q->where('id', '!=', $skripsi->co_dosen_id))
+                            ->pluck('name', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->different('penguji_1_id'), // agar tidak bisa memilih orang yang sama
             ]);
     }
 
@@ -67,10 +95,10 @@ class PenjadwalanSemhasResource extends Resource
             ])
             ->filters([
                 Tables\Filters\Filter::make('Belum Dijadwalkan')
-                  ->query(fn (Builder $query) => $query->whereNull('tanggal_seminar')),
+                    ->query(fn(Builder $query) => $query->whereNull('tanggal_seminar')),
 
                 Tables\Filters\Filter::make('Sudah Dijadwalkan')
-                    ->query(fn (Builder $query) => $query->whereNotNull('tanggal_seminar')),
+                    ->query(fn(Builder $query) => $query->whereNotNull('tanggal_seminar')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

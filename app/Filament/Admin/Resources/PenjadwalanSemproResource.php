@@ -6,8 +6,10 @@ use App\Filament\Admin\Resources\PenjadwalanSemproResource\Pages;
 use App\Filament\Admin\Resources\PenjadwalanSemproResource\RelationManagers;
 use App\Models\PenjadwalanSempro;
 use App\Models\UjianSkripsi;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
@@ -16,8 +18,8 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope; 
-use Filament\Resources\Components\Tab; 
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\Components\Tab;
 use Filament\Forms\Components\Tabs;
 
 
@@ -33,7 +35,7 @@ class PenjadwalanSemproResource extends Resource
     protected static ?string $slug = 'seminar-proposal';
     protected static ?string $navigationGroup = 'Penjadwalan Ujian';
     protected static ?int $navigationSort = 2;
-    
+
 
     public static function form(Form $form): Form
     {
@@ -46,7 +48,20 @@ class PenjadwalanSemproResource extends Resource
                     ->label('Waktu Seminar')
                     ->columnSpanFull(),
                 TextInput::make('ruangan')
+                    ->columnSpanFull(),
+                Select::make('penguji_1_id')
+                    ->label('Dosen Penguji')
+                    ->options(function ($get, $record) {
+                        $skripsi = $record->skripsi;
+                        return User::query()
+                            ->where('role', 'Dosen')
+                            ->where('id', '!=', $skripsi->dosen_id)
+                            ->when($skripsi->co_dosen_id, fn($q) => $q->where('id', '!=', $skripsi->co_dosen_id))
+                            ->pluck('name', 'id');
+                    })
+                    ->required()
                     ->columnSpanFull()
+                    ->searchable()
             ]);
     }
 
@@ -75,10 +90,10 @@ class PenjadwalanSemproResource extends Resource
             ])
             ->filters([
                 Tables\Filters\Filter::make('Belum Dijadwalkan')
-                  ->query(fn (Builder $query) => $query->whereNull('tanggal_seminar')),
+                    ->query(fn(Builder $query) => $query->whereNull('tanggal_seminar')),
 
                 Tables\Filters\Filter::make('Sudah Dijadwalkan')
-                    ->query(fn (Builder $query) => $query->whereNotNull('tanggal_seminar')),
+                    ->query(fn(Builder $query) => $query->whereNotNull('tanggal_seminar')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
